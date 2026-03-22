@@ -82,30 +82,29 @@ class Portfolio:
             self.cash -= quantity * price + commission
             new_qty = current_qty + quantity
 
-            # Update weighted-average cost basis
-            if new_qty != 0.0:
-                # If we had a short and are buying to cover/go long
-                if current_qty < 0:
-                    # Covering short: realize PnL on the covered portion
-                    cover_qty = min(quantity, abs(current_qty))
-                    self.realized_pnl += cover_qty * (current_avg - price)
+            # If we had a short and are buying to cover/go long
+            if current_qty < 0:
+                # Covering short: realize PnL on the covered portion
+                cover_qty = min(quantity, abs(current_qty))
+                self.realized_pnl += cover_qty * (current_avg - price)
 
-                    remaining_buy = quantity - cover_qty
-                    if remaining_buy > 0:
-                        # Crossed from short to long
-                        self.avg_entry_prices[symbol] = price
-                    elif new_qty < 0:
-                        # Still short, avg cost unchanged
-                        pass
-                    else:
-                        # Exactly flat
-                        self.avg_entry_prices[symbol] = 0.0
+                remaining_buy = quantity - cover_qty
+                if remaining_buy > 0 and new_qty != 0.0:
+                    # Crossed from short to long
+                    self.avg_entry_prices[symbol] = price
+                elif new_qty < 0:
+                    # Still short, avg cost unchanged
+                    pass
                 else:
-                    # Adding to long or opening new long
+                    # Exactly flat or crossed
+                    self.avg_entry_prices[symbol] = 0.0
+            else:
+                # Adding to long or opening new long
+                if new_qty != 0.0:
                     total_cost = current_avg * current_qty + price * quantity
                     self.avg_entry_prices[symbol] = total_cost / new_qty
-            else:
-                self.avg_entry_prices[symbol] = 0.0
+                else:
+                    self.avg_entry_prices[symbol] = 0.0
         else:
             # Sell: cash inflow
             self.cash += quantity * price - commission
@@ -117,14 +116,14 @@ class Portfolio:
                 self.realized_pnl += sell_qty * (price - current_avg)
 
                 remaining_sell = quantity - sell_qty
-                if remaining_sell > 0:
+                if remaining_sell > 0 and new_qty != 0.0:
                     # Crossed from long to short
                     self.avg_entry_prices[symbol] = price
                 elif new_qty > 0:
                     # Still long, avg cost unchanged
                     pass
                 else:
-                    # Exactly flat
+                    # Exactly flat or crossed
                     self.avg_entry_prices[symbol] = 0.0
             else:
                 # Adding to short or opening new short
