@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ats_research"
+version = "0.1.0"
+description = "Automated Trading Research System — Backtesting & Paper Trading ONLY (Educational Use)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "ATS Research Contributors" }]
+keywords = ["backtesting", "paper-trading", "quantitative-finance", "research"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial",
+]
+
+dependencies = [
+    "pandas>=2.1.0,<3.0",
+    "numpy>=1.25.0,<2.0",
+    "scipy>=1.11.0,<2.0",
+    "pydantic>=2.4.0,<3.0",
+    "pyyaml>=6.0,<7.0",
+    "matplotlib>=3.8.0,<4.0",
+    "click>=8.1.0,<9.0",
+    "pyarrow>=14.0.0,<18.0",
+    "jinja2>=3.1.0,<4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0,<9.0",
+    "pytest-cov>=4.1.0,<6.0",
+    "black>=23.9.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "pre-commit>=3.4.0",
+    "nbformat>=5.9.0",
+    "jupyter>=1.0.0",
+]
+
+[project.scripts]
+atsr = "ats_research.cli.main:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 99
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 99
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short -q"
+
+[tool.coverage.run]
+source = ["ats_research"]
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true

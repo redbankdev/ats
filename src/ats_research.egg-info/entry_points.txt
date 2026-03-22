@@ -1,0 +1,2 @@
+[console_scripts]
+atsr = ats_research.cli.main:cli
